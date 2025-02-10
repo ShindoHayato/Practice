@@ -15,12 +15,6 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/repository")
-    public Integer getUserRepository() {
-        int getCount = userRepository.count();
-        return getCount;
-    }
-
-    @GetMapping("/repository")
     public List<User> getCountRepository() {
         List<User> getUser = userRepository.findAll();
         return getUser;
