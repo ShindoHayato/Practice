@@ -14,8 +14,14 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
-    @GetMapping("/repository")
-    public List<User> getCountRepository() {
+    @GetMapping("/repository_1")
+    public Integer getCountRepository() {
+        int getCount = userRepository.count();
+        return getCount;
+    }
+    
+    @GetMapping("/repository_2")
+    public List<User> getUserRepository() {
         List<User> getUser = userRepository.findAll();
         return getUser;
     }
