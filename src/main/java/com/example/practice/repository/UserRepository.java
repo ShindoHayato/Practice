@@ -20,4 +20,8 @@ public class UserRepository {
     public List<User> findAll() {
         return userMapper.findAll();
     }
+
+    public User findById(int id) {
+        return userMapper.findById(id);
+    }
 }

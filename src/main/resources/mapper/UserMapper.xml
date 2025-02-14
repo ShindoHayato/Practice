@@ -5,9 +5,16 @@
 
 <mapper namespace="com.example.practice.repository.mapper.UserMapper">
   <select id="count" resultType="integer">
-    SELECT count(*) FROM `user`
+    SELECT count(*)
+    FROM `user`
   </select>
   <select id="findAll" resultType="com.example.practice.dto.User">
-    SELECT id, mail, password, roles, created, last_logined, enabled FROM `user`
+    SELECT id, mail, password, roles, created, last_logined, enabled
+    FROM `user`
+  </select>
+  <select id="findById" resultType="com.example.practice.dto.User">
+    SELECT id, mail, password, roles, created, last_logined, enabled
+    FROM `user`
+    WHERE id = #{id}
   </select>
 </mapper>
