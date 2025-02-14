@@ -8,6 +8,6 @@
     SELECT count(*) FROM `user`
   </select>
   <select id="findAll" resultType="com.example.practice.dto.User">
-    SELECT * FROM `user`
+    SELECT id, mail, password, roles, created, last_logined, enabled FROM `user`
   </select>
 </mapper>
