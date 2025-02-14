@@ -1,1 +1,2 @@
-練習中のJavaプロジェクト
+# Practice
+JavaとSpringBootを使った練習をしているプロジェクト
