@@ -8,13 +8,58 @@
     SELECT count(*)
     FROM `user`
   </select>
+
   <select id="findAll" resultType="com.example.practice.dto.User">
-    SELECT id, mail, password, roles, created, last_logined, enabled
+    SELECT
+        id,
+        mail,
+        password,
+        roles,
+        created,
+        last_logined,
+        enabled
     FROM `user`
   </select>
+
   <select id="findById" resultType="com.example.practice.dto.User">
-    SELECT id, mail, password, roles, created, last_logined, enabled
+    SELECT 
+        id,
+        mail,
+        password,
+        roles,
+        created,
+        last_logined,
+        enabled
     FROM `user`
     WHERE id = #{id}
   </select>
+
+  <insert id ="insert">
+    INSERT INTO `user`
+      (
+          mail,
+          password,
+          roles,
+          created,
+          last_logined,
+          enabled
+      )
+    VALUES
+      (
+          #{mail},
+          #{password},
+          #{roles},
+          #{time},
+          #{time},
+          true
+      )
+</insert>
+
+<update id="updateLastLogined">
+  UPDATE
+    `user`
+  SET
+    last_logined = #{lastLogined}
+  WHERE `user`.id = #{id}
+</update>
 </mapper>
