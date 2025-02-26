@@ -27,8 +27,8 @@ public class UserRepository {
         return userMapper.findById(id);
     }
 
-    public void updateLastLogined(int id, LocalDateTime lastLogined) {
-        userMapper.updateLastLogined(id, lastLogined);
+    public void updateLastLogined(int id, String mail, String password, String roles, LocalDateTime lastLogined, Boolean enabled) {
+        userMapper.updateLastLogined(id, mail, password, roles, lastLogined, enabled);
     }
 
     public void insert(String mail, String password, LocalDateTime time, String roles) {

@@ -14,6 +14,19 @@ public interface UserMapper {
     List<User> findAll();
     User findById(int id);
 
-    void updateLastLogined(@Param("id") int id, @Param("lastLogined") LocalDateTime lastLogined);
-    void insert(@Param("mail") String mail, @Param("password") String password, @Param("time") LocalDateTime time, @Param("roles") String roles);
+    void updateLastLogined(
+        @Param("id") int id,
+        @Param("mail") String mail,
+        @Param("password") String password,
+        @Param("roles") String roles,
+        @Param("time") LocalDateTime lastLogined,
+        @Param("enabled") Boolean enabled
+        );
+    
+    void insert(
+        @Param("mail") String mail,
+        @Param("password") String password,
+        @Param("time") LocalDateTime time,
+        @Param("roles") String roles
+    );
 }

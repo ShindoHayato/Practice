@@ -59,7 +59,11 @@
   UPDATE
     `user`
   SET
-    last_logined = #{lastLogined}
+    mail = #{mail},
+    password = #{password},
+    roles = #{roles},
+    last_logined = #{time},
+    enabled = #{enabled}
   WHERE `user`.id = #{id}
 </update>
 </mapper>
