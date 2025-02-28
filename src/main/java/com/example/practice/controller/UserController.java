@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.practice.dto.User;
+import com.example.practice.exception.ApplicationException;
+import com.example.practice.exception.Error;
 import com.example.practice.repository.UserRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -55,5 +57,15 @@ public class UserController {
         @RequestHeader String roles) {
             userRepository.insert(mail, password, LocalDateTime.parse(time), roles);
             log.info("挿入");
-        }
+    }
+
+    @GetMapping("/exception")
+    public String throwException() throws Exception {
+        throw new Exception("一般的なExceptionが発生しました！");
+    }
+
+    @GetMapping("/ApplicationException")
+    public String throwApplicationException() throws ApplicationException {
+        throw new ApplicationException(Error.DB_ERROR);
+    }
 }
