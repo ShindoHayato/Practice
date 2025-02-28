@@ -53,17 +53,17 @@
           #{time},
           true
       )
-</insert>
+  </insert>
 
-<update id="updateLastLogined">
-  UPDATE
-    `user`
-  SET
-    mail = #{mail},
-    password = #{password},
-    roles = #{roles},
-    last_logined = #{time},
-    enabled = #{enabled}
-  WHERE `user`.id = #{id}
-</update>
+  <update id="updateLastLogined">
+    UPDATE
+      `user`
+    SET
+      mail = #{mail},
+      password = #{password},
+      roles = #{roles},
+      last_logined = #{time},
+      enabled = #{enabled}
+    WHERE `user`.id = #{id}
+  </update>
 </mapper>

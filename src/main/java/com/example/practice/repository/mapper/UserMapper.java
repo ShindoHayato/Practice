@@ -21,7 +21,7 @@ public interface UserMapper {
         @Param("roles") String roles,
         @Param("time") LocalDateTime lastLogined,
         @Param("enabled") Boolean enabled
-        );
+    );
     
     void insert(
         @Param("mail") String mail,
