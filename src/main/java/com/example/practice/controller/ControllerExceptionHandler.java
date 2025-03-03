@@ -1,5 +1,6 @@
 package com.example.practice.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -12,14 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 @RestControllerAdvice
 public class ControllerExceptionHandler {
     @ExceptionHandler({ Exception.class })
-    public Error unhandledException(Exception ex) {
+    public ResponseEntity<Error> unhandledException(Exception ex) {
         log.error("unhandled Exception.", ex);
-        return Error.INTERNAL_SERVER_ERROR;
+        return new ResponseEntity<>(Error.INTERNAL_SERVER_ERROR, Error.INTERNAL_SERVER_ERROR.getStatus());
     }
 
     @ExceptionHandler({ ApplicationException.class })
-    public Error handleApplicationException(ApplicationException ex) {
+    public ResponseEntity<Error> handleApplicationException(ApplicationException ex) {
         log.warn("application exception. " + ex.getError().toString());
-        return ex.getError();
+        return new ResponseEntity<>(ex.getError(), ex.getError().getStatus());
     }
 }

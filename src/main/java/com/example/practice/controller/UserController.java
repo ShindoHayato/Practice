@@ -66,6 +66,6 @@ public class UserController {
 
     @GetMapping("/ApplicationException")
     public String throwApplicationException() throws ApplicationException {
-        throw new ApplicationException(Error.DB_ERROR);
+        throw new ApplicationException(Error.INVALID_REQUEST);
     }
 }
