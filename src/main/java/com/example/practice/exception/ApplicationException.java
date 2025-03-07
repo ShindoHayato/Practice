@@ -9,4 +9,9 @@ public class ApplicationException extends RuntimeException {
     public ApplicationException(Error error) {
         this.error = error;
     }
+
+    public ApplicationException(Error error, Throwable e) {
+        super(e);
+        this.error = error;
+    }
 }
