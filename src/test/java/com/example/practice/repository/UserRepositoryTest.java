@@ -1,13 +1,24 @@
 package com.example.practice.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -74,6 +85,18 @@ public class UserRepositoryTest {
         Assertions.assertEquals(expected, user);
     }
 
+    @Sql(value = "/sql/user/insert_user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @ParameterizedTest
+    @CsvSource({
+            "マイナスの数, -1",
+            "存在しないID, 0"
+
+    })
+    void findByIdNullTest(String desc, Integer id) {
+        User user = userRepository.findById(id);
+        Assertions.assertNull(user);
+    }
+
     /*
      * findAll
      */
@@ -109,6 +132,13 @@ public class UserRepositoryTest {
         Assertions.assertEquals(expected, user);
     }
 
+    @Sql(value = "/sql/user/insert_user0.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Test
+    void findAllEmptyTest() {
+        List<User> user = userRepository.findAll();
+        Assertions.assertEquals(Collections.emptyList(), user);
+    }
+
     /*
      * insert
      */
@@ -124,6 +154,12 @@ public class UserRepositoryTest {
         Assertions.assertNotNull(user.getCreated());
         Assertions.assertNotNull(user.getLast_logined());
         Assertions.assertEquals(true, user.isEnabled());
+    }
+
+    @Test
+    @Sql(value = "/sql/user/insert_user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    void createDuplicateErrorTest() {
+        assertThrows(ApplicationException.class, () -> userRepository.insert("tester1@test.jp", "password", LocalDateTime.now(), "USER"));
     }
 
     /*
@@ -151,5 +187,14 @@ public class UserRepositoryTest {
                         true
         );
         assertEquals(user, expected);
+    }
+
+    @Test
+    void updateLastLoginedSystemErrorTest() {
+        doThrow(DataRetrievalFailureException.class).when(mockMapper).updateLastLogined(anyInt(), anyString(), anyString(), anyString(), any(), any());
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.updateLastLogined(1, "TESTER1@test.jp", "$2a$10$/bGgp.eMJ8IW1UKatZgKKuLzcfIY9eJMqgz.HlX4CJjQuLTh1ic/y", "ROLE_ADMIN", LocalDateTime.of(2022, 1, 1, 0 ,0, 0), true));
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).updateLastLogined(anyInt(), anyString(), anyString(), anyString(), any(), any());
     }
 }
