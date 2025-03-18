@@ -140,5 +140,16 @@ public class UserRepositoryTest {
             LocalDateTime.of(2023, 1, 1, 0 ,0, 0),
             true
         ));
+        User user = userRepository.findById(1);
+        User expected = new User(
+                        1,
+                        "TESTER1@test.jp",
+                        "$2a$10$/bGgp.eMJ8IW1UKatZgKKuLzcfIY9eJMqgz.HlX4CJjQuLTh1ic/y",
+                        "ROLE_ADMIN",
+                        LocalDateTime.of(2022, 1, 1, 0 ,0, 0),
+                        LocalDateTime.of(2023, 1, 1, 0 ,0, 0),
+                        true
+        );
+        assertEquals(user, expected);
     }
 }
