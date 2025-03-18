@@ -2,9 +2,13 @@ package com.example.practice.dto;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+@AllArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class User {
     private int id;
     private String mail;
