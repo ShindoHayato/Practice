@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.context.jdbc.SqlMergeMode.MergeMode.MERGE;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.dao.QueryTimeoutException;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlMergeMode;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -67,6 +69,15 @@ public class UserRepositoryTest {
         Mockito.verify(mockMapper, Mockito.times(1)).count();
     }
 
+    @Test
+    void countTimeoutRetryTest() {
+        when(mockMapper.count()).thenThrow(QueryTimeoutException.class);
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.count());
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).count();
+    }
+
     /*
      * findById
      */
@@ -95,6 +106,24 @@ public class UserRepositoryTest {
     void findByIdNullTest(String desc, Integer id) {
         User user = userRepository.findById(id);
         Assertions.assertNull(user);
+    }
+
+    @Test
+    void findByIdSystemErrorTest() {
+        when(mockMapper.findById(anyInt())).thenThrow(DataRetrievalFailureException.class);
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.findById(1));
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).findById(1);
+    }
+
+    @Test
+    void findByIdTimeoutRetryTest() {
+        when(mockMapper.findById(anyInt())).thenThrow(QueryTimeoutException.class);
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.findById(1));
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).findById(1);
     }
 
     /*
@@ -139,6 +168,24 @@ public class UserRepositoryTest {
         Assertions.assertEquals(Collections.emptyList(), user);
     }
 
+    @Test
+    void findAllSystemErrorTest() {
+        when(mockMapper.findAll()).thenThrow(DataRetrievalFailureException.class);
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.findAll());
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).findAll();
+    }
+
+    @Test
+    void findAllTimeoutRetryTest() {
+        when(mockMapper.findAll()).thenThrow(QueryTimeoutException.class);
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.findAll());
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).findAll();
+    }
+
     /*
      * insert
      */
@@ -160,6 +207,24 @@ public class UserRepositoryTest {
     @Sql(value = "/sql/user/insert_user.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     void createDuplicateErrorTest() {
         assertThrows(ApplicationException.class, () -> userRepository.insert("tester1@test.jp", "password", LocalDateTime.now(), "USER"));
+    }
+
+    @Test
+    void createSystemErrorTest() {
+        doThrow(DataRetrievalFailureException.class).when(mockMapper).insert(any(), any(), any(), any());
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.insert("create_user@test.jp", "password", LocalDateTime.now(), "USER"));
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).insert(any(), any(), any(), any());
+    }
+
+    @Test
+    void createTimeoutRetryTest() {
+        doThrow(QueryTimeoutException.class).when(mockMapper).insert(any(), any(), any(), any());
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.insert("create_user@test.jp", "password", LocalDateTime.now(), "USER"));
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).insert(any(), any(), any(), any());
     }
 
     /*
@@ -192,6 +257,15 @@ public class UserRepositoryTest {
     @Test
     void updateLastLoginedSystemErrorTest() {
         doThrow(DataRetrievalFailureException.class).when(mockMapper).updateLastLogined(anyInt(), anyString(), anyString(), anyString(), any(), any());
+        ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
+        ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.updateLastLogined(1, "TESTER1@test.jp", "$2a$10$/bGgp.eMJ8IW1UKatZgKKuLzcfIY9eJMqgz.HlX4CJjQuLTh1ic/y", "ROLE_ADMIN", LocalDateTime.of(2022, 1, 1, 0 ,0, 0), true));
+        assertEquals(Error.DB_ERROR, e.getError());
+        verify(mockMapper, times(1)).updateLastLogined(anyInt(), anyString(), anyString(), anyString(), any(), any());
+    }
+
+    @Test
+    void updateLastLoginedTimeoutRetryTest() {
+        doThrow(QueryTimeoutException.class).when(mockMapper).updateLastLogined(anyInt(), anyString(), anyString(), anyString(), any(), any());
         ReflectionTestUtils.setField(userRepository, "userMapper", mockMapper);
         ApplicationException e = assertThrows(ApplicationException.class, () -> userRepository.updateLastLogined(1, "TESTER1@test.jp", "$2a$10$/bGgp.eMJ8IW1UKatZgKKuLzcfIY9eJMqgz.HlX4CJjQuLTh1ic/y", "ROLE_ADMIN", LocalDateTime.of(2022, 1, 1, 0 ,0, 0), true));
         assertEquals(Error.DB_ERROR, e.getError());
