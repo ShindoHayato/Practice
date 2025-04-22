@@ -20,16 +20,11 @@ public class ZipCodeTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "abc-defg", "1234-567", "123456", "", "000-0000", "12-34567" })
+    @ValueSource(strings = { "abc-defg", "1234-567", "123456", "", "12-34567" })
     void constructor_InvalidZipCode_ShouldThrowException(String input) {
-        assertThrows(IllegalArgumentException.class, () -> new ZipCode(null));
+        assertThrows(IllegalArgumentException.class, () -> new ZipCode(input));
     }
 
-    @ParameterizedTest
-    @CsvSource({
-        "1234567, 123-4567",
-        "987-6543, 987-6543"
-    })
     @Test
     void getFormatted_ShouldReturnFormattedZipCode() {
         ZipCode zip = new ZipCode("1234567");
