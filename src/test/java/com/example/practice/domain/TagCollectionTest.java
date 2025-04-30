@@ -7,27 +7,38 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 public class TagCollectionTest {
-    @Test   //コンストラクタの正常系
+    @Test
+    @DisplayName("コンストラクタの正常系")
     void normalTagsTest() {
         TagCollection tags = new TagCollection(List.of("red", "blue", "green", " blue "));
         List<String> result = tags.getTags();
         assertEquals(List.of("red", "blue", "green"), result);
     }
 
-    @Test   //コンストラクタの異常系（nullリスト）
+    @Test
+    @DisplayName("コンストラクタの異常系（nullリスト）")
     void nullListExceptionTest() {
         assertThrows(IllegalArgumentException.class, () -> new TagCollection(null));
     }
 
-    @Test   //コンストラクタの異常系（nullタグ含む）
+    @Test
+    @DisplayName("コンストラクタの異常系（nullタグ含む）")
     void containsNullTagExceptionTest() {
         assertThrows(NullPointerException.class, () -> new TagCollection(List.of("red", null, "green")));
     }
 
-    @Test   // addメソッドの正常系（新規追加）
+    @Test
+    @DisplayName("コンストラクタの異常系（空白文字タグ含む）")
+    void containsBlankTagExceptionTest() {
+        assertThrows(IllegalArgumentException.class, () -> new TagCollection(List.of("red", "   ", "green")));
+    }
+
+    @Test
+    @DisplayName("addメソッドの正常系（新規追加）")
     void normalAddNewTagTest() {
         TagCollection original = new TagCollection(List.of("red"));
         TagCollection added = original.add("blue");
@@ -36,20 +47,30 @@ public class TagCollectionTest {
         assertEquals(List.of("red", "blue"), added.getTags());
     }
 
-    @Test   // addメソッドの異常系（空白文字）
+    @Test
+    @DisplayName("addメソッドの異常系（nullタグ）")
+    void addNullTagExceptionTest() {
+        TagCollection original = new TagCollection(List.of("red"));
+        assertThrows(IllegalArgumentException.class, () -> original.add(null));
+    }
+
+    @Test
+    @DisplayName("addメソッドの異常系（空白文字タグ）")
     void addBlankTagExceptionTest() {
         TagCollection original = new TagCollection(List.of("red"));
         assertThrows(IllegalArgumentException.class, () -> original.add("   "));
     }
 
-    @Test   // addメソッドの既存タグ → 変更なし
+    @Test
+    @DisplayName("addメソッドの既存タグ → 変更なし")
     void addExistingTagTest() {
         TagCollection tags = new TagCollection(List.of("red"));
         TagCollection result = tags.add("red");
         assertSame(tags, result);
     }
 
-    @Test   // removeメソッドの正常系（存在するタグ削除）
+    @Test
+    @DisplayName("removeメソッドの正常系（存在するタグ削除）")
     void removeExistingTagTest() {
         TagCollection tags = new TagCollection(List.of("red", "blue", "green"));
         TagCollection result = tags.remove("red");
@@ -58,7 +79,8 @@ public class TagCollectionTest {
         assertNotSame(tags, result);
     }
 
-    @Test   // removeメソッドの存在しないタグ → 変更なし
+    @Test
+    @DisplayName("removeメソッドの存在しないタグ → 変更なし")
     void removeNonExistentTagTest() {
         TagCollection tags = new TagCollection(List.of("red", "blue", "green"));
         TagCollection result = tags.remove("lemon");
@@ -66,9 +88,17 @@ public class TagCollectionTest {
         assertSame(tags, result);
     }
 
-    @Test   // removeメソッドの異常系（nullタグ）
-    void removeNullTagTest() {
+    @Test
+    @DisplayName("removeメソッドの異常系（nullタグ）")
+    void removeNullTagExceptionTest() {
         TagCollection tags = new TagCollection(List.of("red"));
         assertThrows(IllegalArgumentException.class, () -> tags.remove(null));
+    }
+
+    @Test
+    @DisplayName("removeメソッドの異常系（空白文字タグ）")
+    void removeBlankTagExceptionTest() {
+        TagCollection tags = new TagCollection(List.of("red"));
+        assertThrows(IllegalArgumentException.class, () -> tags.remove("   "));
     }
 }
