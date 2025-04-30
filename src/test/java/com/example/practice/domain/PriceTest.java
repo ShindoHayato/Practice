@@ -9,7 +9,19 @@ import org.junit.jupiter.api.Test;
 
 public class PriceTest {
     @Test
-    void normalAmountTest() {
+    void normalAmountTest1() {
+        Price price = new Price(new BigDecimal("123.454"));
+        assertEquals(new BigDecimal("123.45"), price.getAmount());
+    }
+
+    @Test
+    void normalAmountTest2() {
+        Price price = new Price(new BigDecimal("123.455"));
+        assertEquals(new BigDecimal("123.46"), price.getAmount());
+    }
+
+    @Test
+    void normalAmountTest3() {
         Price price = new Price(new BigDecimal("123.456"));
         assertEquals(new BigDecimal("123.46"), price.getAmount());
     }
