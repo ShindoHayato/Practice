@@ -1,0 +1,62 @@
+# リフレクション
+
+リフレクションは、実行時にクラスやメソッド、フィールドを動的に調査・操作できる仕組みです。
+
+パフォーマンス低下やセキュリティ上のリスクなどのデメリットがあるため、
+必要な場合にのみ使用することが推奨されます。
+
+## リフレクションの使用例
+
+```java
+class Sample {
+    private final String name;
+
+    public Sample(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+// Sampleクラスのインスタンスを生成
+Class<?> sampleClass = Class.forName("com.example.doc.Sample"); // FQDNで取得
+Class<?> clazz = Sample.class; // リテラルで取得
+Object sampleInstance = sampleClass.getDeclaredConstructor(String.class).newInstance("John Doe");
+System.out.println(sampleInstance);
+
+// getNameメソッドを呼び出す
+Method getNameMethod = sampleClass.getMethod("getName");
+String name = (String) getNameMethod.invoke(sampleInstance);
+System.out.println("Name: " + name);
+
+// フィールドにアクセスする
+Sample sample = (Sample) sampleInstance;
+Field nameField = sampleClass.getDeclaredField("name");
+nameField.setAccessible(true); // privateフィールドにアクセスするための設定
+nameField.set(sample, "Jane Doe2"); // フィールドの値を変更
+System.out.println("Updated Name: " + sample.getName());
+```
+
+springなどのフレームワークでは、リフレクションを利用してアノテーションを取得するなどして仕組みを実現しています。
+
+```java
+// アノテーション定義
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
+@interface MyAnnotation {
+    String value();
+}
+
+class MyClass {
+    @MyAnnotation("Hello, World!")
+    private String myField;
+}
+
+// アノテーションの取得
+MyClass myClass = new MyClass();
+Field myField = myClass.getClass().getDeclaredField("myField");
+MyAnnotation annotation = myField.getAnnotation(MyAnnotation.class);
+System.out.println("Annotation value: " + annotation.value());
+```
